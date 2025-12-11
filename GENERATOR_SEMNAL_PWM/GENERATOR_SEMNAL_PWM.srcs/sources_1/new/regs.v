@@ -136,7 +136,7 @@ module regs (
             // functii (doar bitii [1:0] sunt folositi)
             ADDR_FUNCTIONS:     data_read = {6'b0, functions[1:0]};
 
-            // adresa necunoscuta → returnam 0
+            // adresa necunoscuta ? returnam 0
             default:            data_read = 8'h00;
         endcase
     end

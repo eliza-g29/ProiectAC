@@ -11,8 +11,8 @@ module counter (
     input[7:0] prescale
 );
     //registri interni
-    reg [15:0] cnt_r;      // numaratorul
-    reg [8:0]  ps_cnt;     // contorul de prescalare (poate numara pana la 255)
+    reg [15:0] cnt_r; // numaratorul
+    reg [8:0]  ps_cnt; // contorul de prescalare (poate numara pana la 255)
 
     assign count_val = cnt_r;
 
@@ -20,8 +20,8 @@ module counter (
     function [8:0] prescale_limit;
         input [7:0] ps;
         begin
-            if (ps == 8'd0)       prescale_limit = 9'd0;          // divide by 1 (tick la fiecare clk)
-            else if (ps >= 8'd8)  prescale_limit = 9'd255;        // clamp: maxim 2^8 - 1
+            if (ps == 8'd0)       prescale_limit = 9'd0; // divide by 1 (tick la fiecare clk)
+            else if (ps >= 8'd8)  prescale_limit = 9'd255; // clamp: maxim 2^8 - 1
             else                  prescale_limit = (9'd1 << ps) - 1;
         end
     endfunction
@@ -46,7 +46,7 @@ module counter (
                 else
                     ps_cnt <= ps_cnt + 9'd1;
 
-                // avansul numaratorului are loc DOAR la "tick"
+                    // avansul numaratorului are loc DOAR la "tick"
                 if (tick) begin
                     if (upnotdown) begin
                         // UP: 0,1,2,...,PERIOD,0,1,...

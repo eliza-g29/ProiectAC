@@ -18,10 +18,10 @@ module instr_dcd (
     localparam IDLE = 2'd0;
     localparam WAIT_FOR_DATA = 2'd1; // asteapta payload pentru write
     localparam SEND_READ_BYTE = 2'd2; // trimite data_read la master
-        
+
     reg [1:0] state, next_state;
-    reg       cmd_is_write;   // 1 = write, 0 = read
-    reg [7:0] out_reg;        // data_out registru
+    reg       cmd_is_write; // 1 = write, 0 = read
+    reg [7:0] out_reg; // data_out registru
     reg [5:0] addr_reg; // addr registru
     reg read_reg; // read registru
     reg write_reg; // write registru
@@ -43,7 +43,7 @@ module instr_dcd (
             write_reg <= 1'b0;
             data_write_reg <= 8'd0;
             out_reg <= 8'd0;
-            
+
         end else begin
             // dezactiveaza pulsurile in mod implicit
             read_reg  <= 1'b0;
@@ -64,7 +64,7 @@ module instr_dcd (
                             // Read: pulseaza read pentru un ciclu
                             read_reg <= 1'b1;
                         end
-                        
+
                     end
                 end
 
@@ -73,7 +73,7 @@ module instr_dcd (
                         // Latch payload pentru write si pulseaza write
                         data_write_reg <= data_in;
                         write_reg <= 1'b1;
-                        
+
                         out_reg <= 8'd0;
                     end
                 end

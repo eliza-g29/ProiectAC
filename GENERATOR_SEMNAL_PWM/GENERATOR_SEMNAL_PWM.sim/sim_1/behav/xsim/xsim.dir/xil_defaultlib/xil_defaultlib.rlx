@@ -1,0 +1,12 @@
+0.7
+2020.2
+Apr 18 2022
+16:05:34
+C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.sim/sim_1/behav/xsim/glbl.v,1649976174,verilog,,,,glbl,,,,,,,,
+C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/counter.v,1765479269,verilog,,C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/instr_dcd.v,,counter,,,,,,,,
+C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/instr_dcd.v,1765479216,verilog,,C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/pwm_gen.v,,instr_dcd,,,,,,,,
+C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/pwm_gen.v,1765479283,verilog,,C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/regs.v,,pwm_gen,,,,,,,,
+C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/regs.v,1765479260,verilog,,C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/spi_bridge.v,,regs,,,,,,,,
+C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/spi_bridge.v,1765479202,verilog,,C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/top.v,,spi_bridge,,,,,,,,
+C:/Users/Asus/Desktop/AC-332AA/GENERATOR_SEMNAL_PWM/GENERATOR_SEMNAL_PWM.srcs/sources_1/new/top.v,1765479187,verilog,,C:/Users/Asus/Downloads/testbench.v,,top,,,,,,,,
+C:/Users/Asus/Downloads/testbench.v,1765478665,verilog,,,,tb_top_system,,,,,,,,

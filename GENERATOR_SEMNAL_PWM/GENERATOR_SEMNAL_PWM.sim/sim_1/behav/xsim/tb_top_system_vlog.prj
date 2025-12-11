@@ -1,0 +1,15 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../GENERATOR_SEMNAL_PWM.srcs/sources_1/new/counter.v" \
+"../../../../GENERATOR_SEMNAL_PWM.srcs/sources_1/new/instr_dcd.v" \
+"../../../../GENERATOR_SEMNAL_PWM.srcs/sources_1/new/pwm_gen.v" \
+"../../../../GENERATOR_SEMNAL_PWM.srcs/sources_1/new/regs.v" \
+"../../../../GENERATOR_SEMNAL_PWM.srcs/sources_1/new/spi_bridge.v" \
+"../../../../GENERATOR_SEMNAL_PWM.srcs/sources_1/new/top.v" \
+"../../../../../../../Downloads/testbench.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

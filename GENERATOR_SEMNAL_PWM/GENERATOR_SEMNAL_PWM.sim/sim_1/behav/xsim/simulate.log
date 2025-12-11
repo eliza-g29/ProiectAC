@@ -1,0 +1,43 @@
+Time resolution is 1 ps
+--- Starting Testbench ---
+Time 750000: Reset deasserted.
+Time 2450000: SPI WRITE  addr=0x00  data=0x07
+Time 4350000: SPI WRITE  addr=0x0a  data=0x00
+Time 6250000: SPI WRITE  addr=0x03  data=0x03
+Time 8150000: SPI WRITE  addr=0x02  data=0x01
+Time 10050000: SPI WRITE  addr=0x0c  data=0x01
+Time 11950000: SPI WRITE  addr=0x0d  data=0x00
+Time 13850000: SPI WRITE  addr=0x07  data=0x01
+Time 15750000: SPI WRITE  addr=0x07  data=0x00
+
+--- Test 1: PWM ALIGN_LEFT, compare1=3, period=7 ---
+[PASS] PWM duty aprox. corect: high=20, expected ~20
+Time 21850000: SPI READ   addr=0x08  data=0x00
+
+--- Test 2: PWM RANGE_BETWEEN_COMPARES, c1=2, c2=6 ---
+Time 23750000: SPI WRITE  addr=0x03  data=0x02
+Time 25650000: SPI WRITE  addr=0x05  data=0x06
+Time 27550000: SPI WRITE  addr=0x0d  data=0x02
+[PASS] PWM duty aprox. corect: high=20, expected ~20
+
+--- Test 3: PWM ALIGN_RIGHT, compare1=5 ---
+Time 33650000: SPI WRITE  addr=0x03  data=0x05
+Time 35550000: SPI WRITE  addr=0x0d  data=0x01
+[PASS] PWM duty aprox. corect: high=15, expected ~15
+
+--- Test 4: PWM UNALIGNED EDGE CASE EQUAL COMPARES ---
+Time 41650000: SPI WRITE  addr=0x02  data=0x00
+Time 43550000: SPI WRITE  addr=0x03  data=0x05
+Time 45450000: SPI WRITE  addr=0x05  data=0x05
+Time 47350000: SPI WRITE  addr=0x02  data=0x01
+[PASS] PWM duty aprox. corect: high=0, expected ~0
+
+--- Test 5: PWM NOT TRIGGER AT START, compare1=0 ---
+Time 51050000: SPI WRITE  addr=0x02  data=0x00
+Time 52950000: SPI WRITE  addr=0x03  data=0x00
+Time 54850000: SPI WRITE  addr=0x0d  data=0x00
+Time 56750000: SPI WRITE  addr=0x02  data=0x01
+[PASS] PWM duty aprox. corect: high=0, expected ~0
+
+--- Finished Testbench ---
+$finish called at time : 59550 ns : File "C:/Users/Asus/Downloads/testbench.v" Line 214

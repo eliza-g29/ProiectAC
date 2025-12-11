@@ -1,93 +1,83 @@
-
+`default_nettype none
 module pwm_gen (
-    // peripheral clock signals
-    input clk,
-    input rst_n,
-    // PWM signal register configuration
-    input pwm_en,
-    input[15:0] period,
-    input[7:0] functions,
-    input[15:0] compare1,
-    input[15:0] compare2,
-    input[15:0] count_val,
-    // top facing signals
-    output pwm_out
+    input  wire        clk,
+    input  wire        rst_n,
+    // config
+    input  wire        pwm_en,
+    input  wire [15:0] period,
+    input  wire [7:0]  functions,
+    input  wire [15:0] compare1,
+    input  wire [15:0] compare2,
+    input  wire [15:0] count_val,
+    output wire        pwm_out
 );
-    // copie activa a configuratiei (se actualizeaza la inceput de ciclu sau cand este oprit)
-    reg [15:0] period_act, comp1_act, comp2_act;
+    // copii active ale configuratiei
+    reg [15:0] period_act, c1_act, c2_act;
     reg [1:0]  func_act;
 
-    // faza locala in cadrul ciclului 0..period_act (independenta de directia contorului)
-    reg [15:0] phase;     // creste cu 1 la fiecare tick al numaratorului
-    reg [15:0] count_d;   // esantion anterior al count_val
+    // clamp local la period
+    wire [15:0] c1_cl = (compare1 > period) ? period : compare1;
+    wire [15:0] c2_cl = (compare2 > period) ? period : compare2;
 
-    // detectie inceput de ciclu indiferent de UP/DOWN:
-    //  UP: trecere period -> 0
-    //  DOWN: trecere 0 -> period
-    wire cycle_wrap = (count_d == period_act && count_val == 16'd0) ||
-                      (count_d == 16'd0      && count_val == period_act);
+    // detectam startul ciclului (overflow)
+    wire start_of_cycle = (count_val == 16'd0);
 
-    // tick observat cand s-a schimbat count_val (prescalerul a generat un pas)
-    wire tick_seen = (count_val != count_d);
+    // detectam daca numaratorul este oprit
+    reg [15:0] prev_count_val;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) prev_count_val <= 16'hFFFF;
+        else        prev_count_val <= count_val;
+    end
 
-    // limitam pragurile la period ca sa evitam comparatii invalide
-    wire [15:0] c1_s = (compare1 > period) ? period : compare1;
-    wire [15:0] c2_s = (compare2 > period) ? period : compare2;
+    // daca valoarea nu s-a schimbat fata de ciclul anterior, counter-ul e oprit
+    wire counter_stopped = (count_val == prev_count_val);
 
-    // actualizam configuratia activa la inceput de ciclu sau cand PWM este oprit
-    wire cfg_update = cycle_wrap || !pwm_en;
+    // conditia de actualizare a registrelor interne
+    wire cfg_update = (!pwm_en) | start_of_cycle | counter_stopped;
 
-    // registri secventiali: retinere count anterior, faza si configuratia activa
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            count_d    <= 16'd0;
-            phase      <= 16'd0;
             period_act <= 16'd0;
-            comp1_act  <= 16'd0;
-            comp2_act  <= 16'd0;
+            c1_act     <= 16'd0;
+            c2_act     <= 16'd0;
             func_act   <= 2'b00;
-        end else begin
-            count_d <= count_val;
-
-            if (cfg_update) begin
-                // fotografie a registrelor externe intr-un moment sigur
-                period_act <= period;
-                comp1_act  <= c1_s;
-                comp2_act  <= c2_s;
-                func_act   <= functions[1:0];
-                phase      <= 16'd0;          // resetam faza la inceput de ciclu
-            end else if (tick_seen) begin
-                if (phase < period_act)
-                    phase <= phase + 16'd1;   // avanseaza faza cu fiecare tick
-            end
+        end else if (cfg_update) begin
+            period_act <= period;
+            c1_act     <= c1_cl;
+            c2_act     <= c2_cl;
+            func_act   <= functions[1:0];
         end
     end
 
-    // logica PWM combinationala pe baza configuratiei active si a fazei
+    // decodare mod
     wire aliniat   = (func_act[1] == 1'b0);
     wire dreapta   = (func_act[0] == 1'b1);
+    wire interval  = (func_act == 2'b10);
 
-    // aliniat stanga: iesire 1 pentru phase < comp1_act
-    wire win_stanga = (phase < comp1_act);
+    // ALIGN_LEFT: activ [0, compare1]. 
+    // Fix Test 5: Daca compare1 este 0, fortam 0 (evitam pulsul de 1 ciclu la count=0).
+    wire win_left   = (c1_act == 16'd0) ? 1'b0 : (count_val <= c1_act);
 
-    // aliniat dreapta: iesire 1 pe ultimele comp1_act trepte din ciclu
-    wire [15:0] start_dreapta = (period_act > comp1_act) ? (period_act - comp1_act) : 16'd0;
-    wire win_dreapta = (phase >= start_dreapta);
+    // ALIGN_RIGHT: activ [compare1, period]
+    wire win_right  = (count_val >= c1_act);
 
-    // nealiniat: iesire 1 in intervalul [comp1_act, comp2_act) daca comp1_act < comp2_act
-    wire win_nealiniat = (comp1_act < comp2_act) &&
-                         (phase >= comp1_act) && (phase < comp2_act);
+    // RANGE: activ [compare1, compare2)
+    wire win_range  = (c1_act < c2_act) && (count_val >= c1_act) && (count_val < c2_act);
 
-    wire pwm_calc = aliniat ? (dreapta ? win_dreapta : win_stanga)
-                            : win_nealiniat;
+    // selectorul de baza
+    wire pwm_logic = interval ? win_range
+    : (dreapta ? win_right : win_left);
 
-    // registru de iesire: cand pwm_en=0 mentinem starea
+    // calcul final cu override
+    wire pwm_calc = (c1_act == c2_act) ? 1'b0 : pwm_logic;
+
     reg pwm_q;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n)       pwm_q <= 1'b0;
         else if (pwm_en)  pwm_q <= pwm_calc;
-        else              pwm_q <= pwm_q;   // mentine ultima valoare cand este dezactivat
+        // latch behavior cand pwm_en=0
     end
 
     assign pwm_out = pwm_q;
 endmodule
+`default_nettype wire
